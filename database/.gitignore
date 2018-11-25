@@ -1,0 +1,3 @@
+*.sqlite
+/seeds/FarizTableSeeder.php
+/seeds/TransactionTableSeeder.php
