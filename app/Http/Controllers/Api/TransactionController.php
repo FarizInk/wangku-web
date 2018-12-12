@@ -261,7 +261,13 @@ class TransactionController extends Controller
       } else if ($type == "group") {
         $class = User::find($transaction->transactionable_id);
       }
-      $class->balance = $class->balance - $transaction->amount;
+
+      if ($transaction->status == "minus") {
+        $class->balance = $class->balance + $transaction->amount;
+      } else if ($transaction->status == "plus") {
+        $class->balance = $class->balance - $transaction->amount;
+      }
+
       $class->save();
 
       return response()->json([
