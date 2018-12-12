@@ -25,6 +25,7 @@ class TransactionController extends Controller
 
       if ($type == "user") {
         $class = User::with('metadata')->find(Auth::user()->id);
+        $dateClass = $class->metadata->region;
 
         if ($request->status == "minus") {
           if ($class->balance <= $request->amount) {
@@ -35,17 +36,10 @@ class TransactionController extends Controller
             ], 422);
           }
         }
-
-        if ($class->metadata->region == "west") {
-          $date = Carbon::now()->setTimezone('Asia/Jakarta');
-        } else if ($class->metadata->region == "middle") {
-          $date = Carbon::now()->setTimezone('Asia/Singapore');
-        } else if ($class->metadata->region == "east") {
-          $date = Carbon::now()->setTimezone('Asia/Tokyo');
-        }
       } else if ($type == "group") {
         $this->authorize('authorization', $group);
         $class = $group;
+        $dateClass = $group->region;
 
         if ($request->status == "minus") {
           if ($class->balance <= $request->amount) {
@@ -56,14 +50,14 @@ class TransactionController extends Controller
             ], 422);
           }
         }
+      }
 
-        if ($group->region == "west") {
-          $date = Carbon::now()->setTimezone('Asia/Jakarta');
-        } else if ($group->region == "middle") {
-          $date = Carbon::now()->setTimezone('Asia/Singapore');
-        } else if ($group->region == "east") {
-          $date = Carbon::now()->setTimezone('Asia/Tokyo');
-        }
+      if ($dateClass == "west") {
+        $date = Carbon::now()->setTimezone('Asia/Jakarta');
+      } else if ($dateClass == "middle") {
+        $date = Carbon::now()->setTimezone('Asia/Singapore');
+      } else if ($dateClass == "east") {
+        $date = Carbon::now()->setTimezone('Asia/Tokyo');
       }
 
       $transaction = new Transaction([
@@ -174,7 +168,7 @@ class TransactionController extends Controller
         $class = User::find(Auth::user()->id);
 
         if ($request->status == "minus") {
-          if ($class->balance <= $request->amount) {
+          if ($class->balance <= $request->amount || ($class->balance <= $transaction->amount && $transaction->amount != $request->amount)) {
             return response()->json([
               "errors" => [
                 "amount" => "Your balance is insufficient."
@@ -186,7 +180,7 @@ class TransactionController extends Controller
         $class = $group;
 
         if ($request->status == "minus") {
-          if ($class->balance <= $request->amount) {
+          if ($class->balance <= $request->amount || ($class->balance <= $transaction->amount && $transaction->amount != $request->amount)) {
             return response()->json([
               "errors" => [
                 "amount" => "The group balance is insufficient."
@@ -196,18 +190,28 @@ class TransactionController extends Controller
         }
       }
 
+      $oldAmount = $transaction->amount;
+
       $transaction->status = $request->get('status', $transaction->status);
       $transaction->amount = $request->get('amount', $transaction->amount);
       $transaction->description = $request->get('description', $transaction->description);
       $transaction->time = $request->get('time', $transaction->time);
-      $transaction->save();
 
       if ($request->status == "minus") {
         $class->balance = $class->balance - $request->amount;
-      } else {
+      } else if ($request->status == "plus") {
+        $class->balance = $class->balance - $oldAmount;
         $class->balance = $class->balance + $request->amount;
+        if ($class->balance < 0) {
+          return response()->json([
+            "errors" => [
+              "amount" => "Balance is insufficient."
+            ]
+          ], 422);
+        }
       }
 
+      $transaction->save();
       $class->save();
 
       $response = fractal()
@@ -238,8 +242,16 @@ class TransactionController extends Controller
 
       $transaction->delete();
 
+      if ($type == "user") {
+        $class = User::find($transaction->transactionable_id);
+      } else if ($type == "group") {
+        $class = User::find($transaction->transactionable_id);
+      }
+      $class->balance = $class->balance - $transaction->amount;
+      $class->save();
+
       return response()->json([
-        "mesaage" => "Transaction deleted",
+        "message" => "Transaction deleted",
       ]);
     }
 
