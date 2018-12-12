@@ -203,7 +203,13 @@ class TransactionController extends Controller
 
       if ($request->status == "minus") {
         if ($oldAmount != $request->amount) {
-          $class->balance = $class->balance - $request->amount;
+          $count = $request->amount - $oldAmount;
+          if ($count >= 0) {
+            $class->balance = $class->balance - $count;
+          } else {
+            $count = str_replace('-', '', $count);
+            $class->balance = $class->balance + (int)$count;
+          }
         }
       } else if ($request->status == "plus") {
         if ($transaction->status == $request->status) {
