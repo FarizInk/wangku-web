@@ -202,7 +202,7 @@ class TransactionController extends Controller
       $transaction->time = $request->get('time', $transaction->time);
 
       if ($request->status == "minus") {
-        if ($transaction->amount != $request->amount) {
+        if ($oldAmount != $request->amount) {
           $class->balance = $class->balance - $request->amount;
         }
       } else if ($request->status == "plus") {
