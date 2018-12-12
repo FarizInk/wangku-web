@@ -154,7 +154,11 @@ class TransactionController extends Controller
       $date = Carbon::now()->setTimezone('Asia/Jakarta');
 
       if ($transaction->date != $date->toDateString()) {
-        abort(403, 'The change time is up.');
+        abort(403, [
+          "errors" => [
+            "amount" => "The change time is up."
+          ]
+        ]);
       }
 
       $this->validate($request, [
@@ -198,9 +202,13 @@ class TransactionController extends Controller
       $transaction->time = $request->get('time', $transaction->time);
 
       if ($request->status == "minus") {
-        $class->balance = $class->balance - $request->amount;
+        if ($transaction->amount != $request->amount) {
+          $class->balance = $class->balance - $request->amount;
+        }
       } else if ($request->status == "plus") {
-        $class->balance = $class->balance - $oldAmount;
+        if ($transaction->status == $request->status) {
+          $class->balance = $class->balance - $oldAmount;
+        }
         $class->balance = $class->balance + $request->amount;
         if ($class->balance < 0) {
           return response()->json([
