@@ -58,6 +58,8 @@ class TransactionController extends Controller
         $date = Carbon::now()->setTimezone('Asia/Singapore');
       } else if ($dateClass == "east") {
         $date = Carbon::now()->setTimezone('Asia/Tokyo');
+      } else {
+        $date = Carbon::now()->setTimezone('Asia/Jakarta');
       }
 
       $transaction = new Transaction([

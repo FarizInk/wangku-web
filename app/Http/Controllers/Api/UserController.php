@@ -11,6 +11,7 @@ use Hash;
 use Illuminate\Auth\Events\Registered;
 use App\Jobs\SendVerificationEmail;
 use File;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -141,5 +142,34 @@ class UserController extends Controller
     public function checkApi()
     {
       return "true";
+    }
+
+    public function datenow()
+    {
+      $user = User::find(Auth::user()->id);
+      if ($user->region == "west") {
+        $date = Carbon::now()->setTimezone('Asia/Jakarta');
+      } else if ($user->region == "middle") {
+        $date = Carbon::now()->setTimezone('Asia/Singapore');
+      } else if ($user->region == "east") {
+        $date = Carbon::now()->setTimezone('Asia/Tokyo');
+      } else {
+        $date = Carbon::now()->setTimezone('Asia/Jakarta');
+      }
+
+      return response()->json([
+        "datenow" => $date->toDateString(),
+      ]);
+    }
+
+    public function sendemail()
+    {
+      $user = User::find(Auth::user()->id);
+
+      dispatch(new SendVerificationEmail($user));
+
+      return response()->json([
+        "message" => "Successfully send verification, please check your email to confirm your identity."
+      ]);
     }
 }

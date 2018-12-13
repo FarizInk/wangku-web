@@ -22,6 +22,8 @@ Route::namespace('Api')->group(function () {
     Route::post('profile/update/email', 'UserController@updateEmail');
     Route::post('profile/update/password', 'UserController@updatePassword');
     Route::post('profile/update/photo', 'UserController@updatePhoto');
+    Route::get('datenow', 'UserController@datenow');
+    Route::post('profile/sendemail', 'UserController@sendemail');
 
     Route::get('transactions/date/{type}/{date}', 'TransactionController@byDate');
     Route::get('transactions/date/{type}/{date}/{group}', 'TransactionController@byDate');
