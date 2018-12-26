@@ -18,7 +18,7 @@ class GroupTransformer extends TransformerAbstract
       'region'        => $group->region,
       'owner'         => $group->created_by,
       'photo'         => $group->photo,
-      'date_human' => Carbon::createFromFormat('Y-m-d H:i:s', $transaction->created_at)->format('d, M Y'),
+      'date_human' => Carbon::createFromFormat('Y-m-d H:i:s', $group->created_at)->format('d, M Y'),
       'created'       => $group->created_at->diffForHumans(),
     ];
   }
