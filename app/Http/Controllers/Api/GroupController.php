@@ -9,6 +9,7 @@ use App\Entities\User;
 use App\Transformers\GroupTransformer;
 use App\Transformers\UserTransformer;
 use Auth;
+use File;
 
 class GroupController extends Controller
 {
