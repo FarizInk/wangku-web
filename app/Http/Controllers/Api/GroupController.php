@@ -131,12 +131,13 @@ class GroupController extends Controller
     public function showMember(Group $group)
     {
       $group = Group::find($group->id);
+      $users = $group->users;
 
       $response = fractal()
-                    ->collection($group->users)
+                    ->collection($users)
                     ->transformWith(new UserTransformer)
                     ->addMeta([
-                      'photo' => $user->metadata->photo
+                      'photo' => $users->metadata->photo
                     ])
                     ->toArray();
 
