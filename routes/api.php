@@ -2,12 +2,6 @@
 
 use Illuminate\Http\Request;
 
-// List todo :
-// Merecord semua transaksi hari ini berdasarkan User
-// Lihat Record Transaksi harian sesuai user yang login
-// Merecord semua transaksi bulan ini berdasarkan User
-// Lihat Record Transaksi bulanan sesuai user yang login
-
 Route::namespace('Api')->group(function () {
   Route::post('register', 'AuthController@register');
   Route::post('login', 'AuthController@login');
@@ -54,5 +48,6 @@ Route::namespace('Api')->group(function () {
     Route::post('group/{group}/addmember', 'GroupController@addMember');
     Route::post('group/{group}/removemember', 'GroupController@removeMember');
     Route::post('group/{group}/leave', 'GroupController@leave');
+    Route::post('group/{group}/photo', 'GroupController@updatePhoto');
   });
 });

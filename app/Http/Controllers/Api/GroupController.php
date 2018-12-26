@@ -129,9 +129,6 @@ class GroupController extends Controller
 
     public function showMember(Group $group)
     {
-      if ($group->created_by != Auth::user()->id) {
-        abort(403, 'Denied Action.');
-      }
       $group = Group::find($group->id);
 
       $response = fractal()

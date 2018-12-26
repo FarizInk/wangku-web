@@ -95,13 +95,13 @@ class TransactionController extends Controller
         $class = Transaction::where([
           ['transactionable_id', '=', Auth::user()->id],
           ['transactionable_type', '=', "App\\Entities\\User"]
-        ])->orderBy('created_at', 'desc')->get();
+        ])->orderBy('created_at', 'desc')->paginate(10);
       } else if ($type == "group") {
         $this->authorize('authorization', $group);
         $class = Transaction::where([
           ['transactionable_id', '=', $group->id],
           ['transactionable_type', '=', "App\\Entities\\Group"]
-        ])->orderBy('created_at', 'desc')->get();
+        ])->orderBy('created_at', 'desc')->paginate(10);
       }
 
       $response = fractal()
