@@ -135,6 +135,9 @@ class GroupController extends Controller
       $response = fractal()
                     ->collection($group->users)
                     ->transformWith(new UserTransformer)
+                    ->addMeta([
+                      'photo' => $user->metadata->photo
+                    ])
                     ->toArray();
 
       return response()->json($response);
