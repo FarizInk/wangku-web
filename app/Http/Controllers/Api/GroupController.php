@@ -130,6 +130,7 @@ class GroupController extends Controller
 
     public function showMember(Group $group)
     {
+      $this->authorize('update', $group);
       $group = Group::find($group->id);
 
       $response = fractal()

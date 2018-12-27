@@ -9,6 +9,9 @@ Route::namespace('Api')->group(function () {
   Route::get('recordday/{region}/{key}', 'DayRecordController@record');
   Route::get('recordmonth/{region}/{key}', 'MonthRecordController@record');
 
+  Route::get('search/user/{user}', 'UserController@userById');
+  Route::post('search/user', 'UserController@userByEmail');
+
   Route::middleware('auth:api')->group(function () {
     Route::get('check', 'UserController@checkApi');
     Route::get('profile', 'UserController@profile');
@@ -49,5 +52,8 @@ Route::namespace('Api')->group(function () {
     Route::post('group/{group}/removemember', 'GroupController@removeMember');
     Route::post('group/{group}/leave', 'GroupController@leave');
     Route::post('group/{group}/photo', 'GroupController@updatePhoto');
+
+    Route::post('search/transactions/self', 'TransactionController@searchSelf');
+    Route::post('search/transactions/{group}', 'TransactionController@searchGroup');
   });
 });

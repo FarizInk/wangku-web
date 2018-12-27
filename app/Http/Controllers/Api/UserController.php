@@ -172,4 +172,37 @@ class UserController extends Controller
         "message" => "Successfully send verification, please check your email to confirm your identity."
       ]);
     }
+
+    public function userById(User $user)
+    {
+      return response()->json([
+        "name"         => $user->name,
+        "email"        => $user->email,
+        "verified"     => $user->email_verified_at,
+        "registered"   => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->format('d, M Y'),
+        "gender"       => $user->metadata->gender,
+        "photo"        => $user->metadata->photo,
+        "region"       => $user->metadata->region
+      ], 201);
+    }
+
+    public function userByEmail(Request $request)
+    {
+      $this->validate($request, [
+          'email' => 'required|email',
+      ]);
+
+      $user = User::where('email', $request->email)->first();
+
+      return response()->json([
+        "id"           => $user->id,
+        "name"         => $user->name,
+        "email"        => $user->email,
+        "verified"     => $user->email_verified_at,
+        "registered"   => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->format('d, M Y'),
+        "gender"       => $user->metadata->gender,
+        "photo"        => $user->metadata->photo,
+        "region"       => $user->metadata->region
+      ], 201);
+    }
 }

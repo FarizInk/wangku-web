@@ -331,4 +331,70 @@ class TransactionController extends Controller
 
       return response()->json($response);
     }
+
+  public function searchSelf(Request $request)
+  {
+    $this->validate($request, [
+      'value' => 'required'
+    ]);
+
+    $user = Auth::user()->transactions();
+    // $user = Transaction::with('transactionable');
+
+    $transactions = $user
+      ->where('description', 'like', $request->value . '%')
+      ->orWhere('description', 'like', '%' . $request->value)
+      ->orWhere('description', 'like', '%' . $request->value . '%')
+      ->orWhere('amount', '=', $request->value)
+      ->get();
+
+    foreach ($transactions as $transaction) {
+      if ($transaction->transactionable_type == "App\\Entities\\User" && $transaction->transactionable_id == Auth::user()->id) {
+        $datas[] = [
+          "id"           => $transaction->id,
+          "status"       => $transaction->status,
+          "amount"       => $transaction->amount,
+          "description"  => $transaction->description,
+          "date"         => $transaction->date,
+          "time"         => $transaction->time,
+          "created_by"   => $transaction->created_by,
+        ];
+      }
+    }
+
+    return response()->json($datas, 201);
+  }
+
+  public function searchGroup(Group $group, Request $request)
+  {
+    $this->authorize('authorization', $group);
+    $this->validate($request, [
+      'value' => 'required'
+    ]);
+
+    $transactions = $group->transactions();
+
+    $transactions = $transactions
+      ->where('description', 'like', $request->value . '%')
+      ->orWhere('description', 'like', '%' . $request->value)
+      ->orWhere('description', 'like', '%' . $request->value . '%')
+      ->orWhere('amount', '=', $request->value)
+      ->get();
+
+    foreach ($transactions as $transaction) {
+      if ($transaction->transactionable_type == "App\\Entities\\Group" && $transaction->transactionable_id == $group->id) {
+        $datas[] = [
+          "id"           => $transaction->id,
+          "status"       => $transaction->status,
+          "amount"       => $transaction->amount,
+          "description"  => $transaction->description,
+          "date"         => $transaction->date,
+          "time"         => $transaction->time,
+          "created_by"   => $transaction->created_by,
+        ];
+      }
+    }
+
+    return response()->json($datas, 201);
+  }
 }
