@@ -10,6 +10,7 @@ use App\Entities\Transaction;
 use App\Entities\DayRecord;
 use App\Entities\MonthRecord;
 use App\Transformers\TransactionTransformer;
+use App\Transformers\AllTransactionTransformer;
 use Auth;
 use Carbon\Carbon;
 
@@ -96,20 +97,27 @@ class TransactionController extends Controller
           ['transactionable_id', '=', Auth::user()->id],
           ['transactionable_type', '=', "App\\Entities\\User"]
         ])->orderBy('created_at', 'desc')->paginate(10);
+
+        $response = fractal()
+                      ->collection($class)
+                      ->transformWith(new TransactionTransformer)
+                      ->toArray();
+
+        return response()->json($response);
       } else if ($type == "group") {
         $this->authorize('authorization', $group);
         $class = Transaction::where([
           ['transactionable_id', '=', $group->id],
           ['transactionable_type', '=', "App\\Entities\\Group"]
         ])->orderBy('created_at', 'desc')->paginate(10);
+
+        $response = fractal()
+                      ->collection($class)
+                      ->transformWith(new AllTransactionTransformer)
+                      ->toArray();
+
+        return response()->json($response);
       }
-
-      $response = fractal()
-                    ->collection($class)
-                    ->transformWith(new TransactionTransformer)
-                    ->toArray();
-
-      return response()->json($response);
     }
 
     public function show($type, Group $group, Transaction $transaction)

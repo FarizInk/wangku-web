@@ -6,10 +6,11 @@ use App\Entities\Transaction;
 use League\Fractal\TransformerAbstract;
 use Carbon\Carbon;
 
-class TransactionTransformer extends TransformerAbstract
+class AllTransactionTransformer extends TransformerAbstract
 {
   public function transform(Transaction $transaction)
   {
+    $user = User::find($transaction->created_by);
     return [
       'id'           => $transaction->id,
       'status'       => $transaction->status,
@@ -20,6 +21,8 @@ class TransactionTransformer extends TransformerAbstract
       'created_by'   => $transaction->created_by,
       'date_human'   => Carbon::createFromFormat('Y-m-d H:i:s', $transaction->created_at)->format('d, M Y'),
       'created'      => $transaction->created_at->diffForHumans(),
+      'name'         => $user->name,
+      'photo'        => $user->metadata->photo,
     ];
   }
 }

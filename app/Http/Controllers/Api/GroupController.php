@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Entities\Group;
 use App\Entities\User;
 use App\Transformers\GroupTransformer;
-use App\Transformers\UserTransformer;
+use App\Transformers\PublicUserTransformer;
 use Auth;
 use File;
 
@@ -135,10 +135,7 @@ class GroupController extends Controller
 
       $response = fractal()
                     ->collection($users)
-                    ->transformWith(new UserTransformer)
-                    ->addMeta([
-                      'photo' => $users[0]['metadata']['photo'],
-                    ])
+                    ->transformWith(new PublicUserTransformer)
                     ->toArray();
 
       return response()->json($response);
