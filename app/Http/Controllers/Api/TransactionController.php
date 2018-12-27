@@ -339,30 +339,18 @@ class TransactionController extends Controller
     ]);
 
     $user = Auth::user()->transactions();
-    // $user = Transaction::with('transactionable');
 
-    $transactions = $user
-      ->where('description', 'like', $request->value . '%')
-      ->orWhere('description', 'like', '%' . $request->value)
-      ->orWhere('description', 'like', '%' . $request->value . '%')
-      ->orWhere('amount', '=', $request->value)
+    $datas = $user
+      ->where('description', 'like', '%' . $request->value . '%')
+      ->orWhere('amount', $request->value)
       ->get();
 
-    foreach ($transactions as $transaction) {
-      if ($transaction->transactionable_type == "App\\Entities\\User" && $transaction->transactionable_id == Auth::user()->id) {
-        $datas[] = [
-          "id"           => $transaction->id,
-          "status"       => $transaction->status,
-          "amount"       => $transaction->amount,
-          "description"  => $transaction->description,
-          "date"         => $transaction->date,
-          "time"         => $transaction->time,
-          "created_by"   => $transaction->created_by,
-        ];
-      }
-    }
+      $response = fractal()
+                    ->collection($datas)
+                    ->transformWith(new TransactionTransformer)
+                    ->toArray();
 
-    return response()->json($datas, 201);
+    return response()->json($response, 201);
   }
 
   public function searchGroup(Group $group, Request $request)
@@ -374,27 +362,16 @@ class TransactionController extends Controller
 
     $transactions = $group->transactions();
 
-    $transactions = $transactions
-      ->where('description', 'like', $request->value . '%')
-      ->orWhere('description', 'like', '%' . $request->value)
-      ->orWhere('description', 'like', '%' . $request->value . '%')
-      ->orWhere('amount', '=', $request->value)
-      ->get();
+    $datas = $transactions
+        ->where('description', 'like', '%' . $request->value . '%')
+        ->orWhere('amount', $request->value)
+        ->get();
 
-    foreach ($transactions as $transaction) {
-      if ($transaction->transactionable_type == "App\\Entities\\Group" && $transaction->transactionable_id == $group->id) {
-        $datas[] = [
-          "id"           => $transaction->id,
-          "status"       => $transaction->status,
-          "amount"       => $transaction->amount,
-          "description"  => $transaction->description,
-          "date"         => $transaction->date,
-          "time"         => $transaction->time,
-          "created_by"   => $transaction->created_by,
-        ];
-      }
-    }
+    $response = fractal()
+                  ->collection($datas)
+                  ->transformWith(new TransactionTransformer)
+                  ->toArray();
 
-    return response()->json($datas, 201);
+    return response()->json($response, 201);
   }
 }
