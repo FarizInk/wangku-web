@@ -105,8 +105,10 @@ class TransactionController extends Controller
 
         return response()->json($response);
       } else if ($type == "group") {
+        $date = Carbon::now()->setTimezone('Asia/Jakarta');
         $this->authorize('authorization', $group);
         $class = Transaction::where([
+          ['date', '!=', $date->toDateString()],
           ['transactionable_id', '=', $group->id],
           ['transactionable_type', '=', "App\\Entities\\Group"]
         ])->orderBy('created_at', 'desc')->paginate(10);
