@@ -307,7 +307,7 @@ class TransactionController extends Controller
 
       $response = fractal()
                     ->collection($transactions)
-                    ->transformWith(new TransactionTransformer)
+                    ->transformWith(new AllTransactionTransformer)
                     ->toArray();
 
       return response()->json($response);
