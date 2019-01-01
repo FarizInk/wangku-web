@@ -16,6 +16,7 @@ class HomeController extends Controller
 {
     public function home()
     {
+      $date = Carbon::now()->setTimezone('Asia/Jakarta');
       $user = User::find(Auth::user()->id)->with('metadata')->get();
 
       foreach ($user as $data) {
@@ -26,9 +27,31 @@ class HomeController extends Controller
         ];
       }
 
-      $transactions = Transaction::all()->count();
+      $transactions = Transaction::where([
+        ['transactionable_id', '=', Auth::user()->id],
+        ['transactionable_type', '=', "App\\Entities\\User"]
+      ]);
+      $datas["transactions"] = $transactions->count();
 
-      $datas["transactions"] = $transactions;
+      $today = Transaction::where([
+        ['transactionable_id', '=', Auth::user()->id],
+        ['transactionable_type', '=', "App\\Entities\\User"],
+        ['date', '=', $date->toDateString()]
+      ]);
+      $datas['today'] = $today->count();
+
+      $todayData = $today->get();
+      $dayIncome = 0;
+      $daySpending = 0;
+      foreach ($todayData as $value) {
+        if ($value->status == "plus") {
+          $dayIncome = $dayIncome + $value->amount;
+        } else {
+          $daySpending = $daySpending + $value->amount;
+        }
+      }
+      $datas["day_income"] = $dayIncome;
+      $datas["day_spending"] = $daySpending;
 
       return response()->json($datas);
     }
