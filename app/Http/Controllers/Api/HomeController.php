@@ -17,7 +17,7 @@ class HomeController extends Controller
     public function home()
     {
       $date = Carbon::now()->setTimezone('Asia/Jakarta');
-      $user = User::find(Auth::user()->id)->with('metadata')->get();
+      $user = User::where('id', Auth::user()->id)->with('metadata')->get();
 
       foreach ($user as $data) {
         $datas = [
