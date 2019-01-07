@@ -53,6 +53,27 @@ class HomeController extends Controller
       $datas["day_income"] = $dayIncome;
       $datas["day_spending"] = $daySpending;
 
+      $day = DayRecord::where([
+        ['dayRecordable_id', '=', Auth::user()->id],
+        ['dayRecordable_type', '=', "App\\Entities\\User"]
+      ])->orderBy('created_at', 'desc')->get();
+
+      for ($i=0; $i < 7; $i++) {
+        $datas['day_record']['day' . $i]['status'] =  $day[$i]['status'];
+        $datas['day_record']['day' . $i]['plus'] =  $day[$i]['plus'];
+        $datas['day_record']['day' . $i]['minus'] =  $day[$i]['minus'];
+        $datas['day_record']['day' . $i]['amount'] =  $day[$i]['amount'];
+        $datas['day_record']['day' . $i]['date'] =  $day[$i]['date'];
+        $datas['day_record']['day' . $i]['date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $day[$i]['created_at'])->format('d, M Y');
+        if ($day[$i]['status'] == 'plus') {
+          $datas['day_record']['day' . $i]['value'] = '+' . $day[$i]['plus'];
+        } else if ($day[$i]['status'] == 'minus') {
+          $datas['day_record']['day' . $i]['value'] = '-' . $day[$i]['minus'];
+        } else {
+          $datas['day_record']['day' . $i]['value'] = 0;
+        }
+      }
+
       return response()->json($datas);
     }
 

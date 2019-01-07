@@ -79,13 +79,13 @@ class MonthRecordController extends Controller
       $class = MonthRecord::where([
         ['monthRecordable_id', Auth::user()->id],
         ['monthRecordable_type', "App\Entities\User"]
-      ])->get();
+      ])->orderBy('created_at', 'desc')->paginate(10);
     } else if ($type == "group") {
       $this->authorize('authorization', $group);
       $class = MonthRecord::where([
         ['monthRecordable_id', $group->id],
         ['monthRecordable_type', "App\Entities\Group"]
-      ])->get();
+      ])->orderBy('created_at', 'desc')->paginate(10);
     }
 
     $response = fractal()

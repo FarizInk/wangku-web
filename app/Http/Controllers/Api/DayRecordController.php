@@ -125,13 +125,13 @@ class DayRecordController extends Controller
       $class = DayRecord::where([
         ['dayRecordable_id', Auth::user()->id],
         ['dayRecordable_type', "App\Entities\User"]
-      ])->get();
+      ])->orderBy('created_at', 'desc')->paginate(10);
     } else if ($type == "group") {
       $this->authorize('authorization', $group);
       $class = DayRecord::where([
         ['dayRecordable_id', $group->id],
         ['dayRecordable_type', "App\Entities\Group"]
-      ])->get();
+      ])->orderBy('created_at', 'desc')->paginate(10);
     }
 
     $response = fractal()
