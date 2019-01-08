@@ -4,6 +4,7 @@ namespace App\Transformers;
 use App\Entities\User;
 use App\Entities\MonthRecord;
 use League\Fractal\TransformerAbstract;
+use Carbon\Carbon;
 
 class MonthRecordTransformer extends TransformerAbstract
 {

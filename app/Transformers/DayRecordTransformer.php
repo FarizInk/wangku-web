@@ -4,6 +4,7 @@ namespace App\Transformers;
 use App\Entities\User;
 use App\Entities\DayRecord;
 use League\Fractal\TransformerAbstract;
+use Carbon\Carbon;
 
 class DayRecordTransformer extends TransformerAbstract
 {
