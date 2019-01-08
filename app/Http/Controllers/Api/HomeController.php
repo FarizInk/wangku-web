@@ -65,6 +65,7 @@ class HomeController extends Controller
         $datas['day_record']['day' . $i]['amount'] =  $day[$i]['amount'];
         $datas['day_record']['day' . $i]['date'] =  $day[$i]['date'];
         $datas['day_record']['day' . $i]['date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $day[$i]['created_at'])->format('d, M Y');
+        $datas['day_record']['day' . $i]['nameday'] = Carbon::createFromFormat('Y-m-d H:i:s', $day[$i]['created_at'])->format('l');
         if ($day[$i]['status'] == 'plus') {
           $datas['day_record']['day' . $i]['value'] = '+' . $day[$i]['plus'];
         } else if ($day[$i]['status'] == 'minus') {
