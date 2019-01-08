@@ -53,6 +53,7 @@ class HomeController extends Controller
       $datas["day_income"] = $dayIncome;
       $datas["day_spending"] = $daySpending;
       $datas["daynow"] = $date->toFormattedDateString();
+      $datas["monthnow"] = $date->format('F');
 
       $day = DayRecord::where([
         ['dayRecordable_id', '=', Auth::user()->id],
