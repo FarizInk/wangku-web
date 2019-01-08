@@ -352,7 +352,6 @@ class TransactionController extends Controller
 
     $datas = $user
       ->where('description', 'like', '%' . $request->value . '%')
-      ->orWhere('amount', $request->value)
       ->get();
 
       $response = fractal()
