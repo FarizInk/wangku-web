@@ -373,11 +373,12 @@ class TransactionController extends Controller
 
     $datas = $transactions
         ->where('description', 'like', '%' . $request->value . '%')
+        ->orWhere('amount', $request->value)
         ->get();
 
     $response = fractal()
                   ->collection($datas)
-                  ->transformWith(new TransactionTransformer)
+                  ->transformWith(new AllTransactionTransformer)
                   ->toArray();
 
     return response()->json($response, 201);
