@@ -16,6 +16,7 @@ class MonthRecordTransformer extends TransformerAbstract
       'description'  => $monthrecord->description,
       'date'         => $monthrecord->date,
       'time'         => $monthrecord->time,
+      'date_human'   => Carbon::createFromFormat('Y-m-d H:i:s', $monthrecord->created_at)->format('d, M Y'),
       'created'      => $monthrecord->created_at->diffForHumans(),
     ];
   }

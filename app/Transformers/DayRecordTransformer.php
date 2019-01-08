@@ -16,6 +16,7 @@ class DayRecordTransformer extends TransformerAbstract
       'minus'        => $dayrecord->minus,
       'plus'         => $dayrecord->plus,
       'date'         => $dayrecord->date,
+      'date_human'   => Carbon::createFromFormat('Y-m-d H:i:s', $dayrecord->created_at)->format('d, M Y'),
       'created'      => $dayrecord->created_at->diffForHumans(),
     ];
   }
