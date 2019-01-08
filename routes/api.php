@@ -57,6 +57,6 @@ Route::namespace('Api')->group(function () {
     Route::post('search/transactions/{group}', 'TransactionController@searchGroup');
 
     Route::get('home', 'HomeController@home');
-    Route::get('home/group', 'HomeController@homeGroup');
+    Route::get('home/{group}', 'HomeController@homeGroup');
   });
 });

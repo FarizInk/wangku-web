@@ -80,8 +80,70 @@ class HomeController extends Controller
       return response()->json($datas);
     }
 
-    public function homeGroup()
+    public function homeGroup(Group $group)
     {
-      // code...
+      $this->authorize('authorization', $group);
+      $date = Carbon::now()->setTimezone('Asia/Jakarta');
+      $dataGroup = Group::where('id', $group->id)->get();
+
+      foreach ($dataGroup as $data) {
+        $datas = [
+          "name" => $data->name,
+          "balance" => $data->balance,
+          "photo" => $data->photo
+        ];
+      }
+
+      $transactions = Transaction::where([
+        ['transactionable_id', '=', $group->id],
+        ['transactionable_type', '=', "App\\Entities\\Group"]
+      ]);
+      $datas["transactions"] = $transactions->count();
+
+      $today = Transaction::where([
+        ['transactionable_id', '=', $group->id],
+        ['transactionable_type', '=', "App\\Entities\\Group"],
+        ['date', '=', $date->toDateString()]
+      ]);
+      $datas['today'] = $today->count();
+
+      $todayData = $today->get();
+      $dayIncome = 0;
+      $daySpending = 0;
+      foreach ($todayData as $value) {
+        if ($value->status == "plus") {
+          $dayIncome = $dayIncome + $value->amount;
+        } else {
+          $daySpending = $daySpending + $value->amount;
+        }
+      }
+      $datas["day_income"] = $dayIncome;
+      $datas["day_spending"] = $daySpending;
+      $datas["daynow"] = $date->toFormattedDateString();
+      $datas["monthnow"] = $date->format('F');
+
+      $day = DayRecord::where([
+        ['dayRecordable_id', '=', $group->id],
+        ['dayRecordable_type', '=', "App\\Entities\\Group"]
+      ])->orderBy('created_at', 'desc')->get();
+
+      for ($i=0; $i < 7; $i++) {
+        $datas['day_record']['day' . $i]['status'] =  $day[$i]['status'];
+        $datas['day_record']['day' . $i]['plus'] =  $day[$i]['plus'];
+        $datas['day_record']['day' . $i]['minus'] =  $day[$i]['minus'];
+        $datas['day_record']['day' . $i]['amount'] =  $day[$i]['amount'];
+        $datas['day_record']['day' . $i]['date'] =  $day[$i]['date'];
+        $datas['day_record']['day' . $i]['date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $day[$i]['created_at'])->format('d, M Y');
+        $datas['day_record']['day' . $i]['nameday'] = Carbon::createFromFormat('Y-m-d H:i:s', $day[$i]['created_at'])->format('l');
+        if ($day[$i]['status'] == 'plus') {
+          $datas['day_record']['day' . $i]['value'] = '+' . $day[$i]['plus'];
+        } else if ($day[$i]['status'] == 'minus') {
+          $datas['day_record']['day' . $i]['value'] = '-' . $day[$i]['minus'];
+        } else {
+          $datas['day_record']['day' . $i]['value'] = 0;
+        }
+      }
+
+      return response()->json($datas);
     }
 }
