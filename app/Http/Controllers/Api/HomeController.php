@@ -27,8 +27,6 @@ class HomeController extends Controller
         ];
       }
 
-      return response()->json($datas);
-
       $transactions = Transaction::where([
         ['transactionable_id', '=', Auth::user()->id],
         ['transactionable_type', '=', "App\\Entities\\User"]
@@ -41,6 +39,8 @@ class HomeController extends Controller
         ['date', '=', $date->toDateString()]
       ]);
       $datas['today'] = $today->count();
+
+      return response()->json($datas);
 
       $todayData = $today->get();
       $dayIncome = 0;
